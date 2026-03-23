@@ -27,5 +27,12 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
             'role' => User::ROLE_STUDENT,
         ]);
+
+        // Run additional seeders
+        $this->call([
+            FictiveMoroccanStudentsSeeder::class,
+            FictiveMoroccanTeachersSeeder::class,
+            StudentPaymentsSeeder::class,
+        ]);
     }
 }

@@ -227,7 +227,7 @@ export default function PaymentsList() {
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                    Montant (€) *
+                                    Montant (dh) *
                                 </label>
                                 <input
                                     type="number"
@@ -357,7 +357,7 @@ export default function PaymentsList() {
                                 <tr key={payment.id} className="hover:bg-slate-50 dark:hover:bg-slate-700">
                                     <td className="px-6 py-4 text-slate-900 dark:text-white font-medium">{payment.user_name}</td>
                                     <td className="px-6 py-4 text-slate-600 dark:text-slate-400 font-semibold">
-                                        €{parseFloat(payment.amount).toFixed(2)}
+                                        dh {parseFloat(payment.amount).toFixed(2)}
                                     </td>
                                     <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
                                         {PAYMENT_METHODS.find(m => m.value === payment.method)?.label}

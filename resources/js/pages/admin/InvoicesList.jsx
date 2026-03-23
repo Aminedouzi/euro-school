@@ -192,7 +192,7 @@ const handlePrint = (invoice) => {
                     <tbody>
                         <tr style="border: 1px solid #e5e7eb;">
                             <td style="padding: 12px; border: 1px solid #e5e7eb; color: #374151; font-size: 12px;">${invoice.description || 'Service de formation'}</td>
-                            <td style="padding: 12px; border: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 12px; font-weight: bold;">€${parseFloat(invoice.subtotal).toFixed(2)}</td>
+                            <td style="padding: 12px; border: 1px solid #e5e7eb; text-align: right; color: #374151; font-size: 12px; font-weight: bold;">dh${parseFloat(invoice.subtotal).toFixed(2)}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -201,15 +201,15 @@ const handlePrint = (invoice) => {
                     <div style="width: 300px;">
                         <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-size: 12px;">
                             <span style="color: #6b7280;">Sous-total:</span>
-                            <span style="color: #374151; font-weight: 600;">€${parseFloat(invoice.subtotal).toFixed(2)}</span>
+                            <span style="color: #374151; font-weight: 600;">dh${parseFloat(invoice.subtotal).toFixed(2)}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb; font-size: 12px;">
                             <span style="color: #6b7280;">TVA:</span>
-                            <span style="color: #374151; font-weight: 600;">€${parseFloat(invoice.tax).toFixed(2)}</span>
+                            <span style="color: #374151; font-weight: 600;">dh${parseFloat(invoice.tax).toFixed(2)}</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; padding: 12px 0; border-top: 2px solid #2563eb; border-bottom: 2px solid #2563eb; font-size: 14px; font-weight: bold;">
                             <span style="color: #1f2937;">TOTAL DÛ:</span>
-                            <span style="color: #2563eb;">€${parseFloat(invoice.total).toFixed(2)}</span>
+                            <span style="color: #2563eb;">dh${parseFloat(invoice.total).toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
@@ -309,7 +309,7 @@ const handlePrint = (invoice) => {
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                    Sous-total (€) *
+                                    Sous-total (dh) *
                                 </label>
                                 <input
                                     type="number"
@@ -325,7 +325,7 @@ const handlePrint = (invoice) => {
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                    TVA (€)
+                                    TVA (dh)
                                 </label>
                                 <input
                                     type="number"
@@ -340,7 +340,7 @@ const handlePrint = (invoice) => {
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                    Total (€) *
+                                    Total (dh) *
                                 </label>
                                 <input
                                     type="number"
@@ -466,7 +466,7 @@ const handlePrint = (invoice) => {
                                     <td className="px-6 py-4 text-slate-900 dark:text-white font-mono font-semibold">{invoice.invoice_number}</td>
                                     <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{invoice.user_name}</td>
                                     <td className="px-6 py-4 text-slate-900 dark:text-white font-semibold">
-                                        €{parseFloat(invoice.total).toFixed(2)}
+                                        dh {parseFloat(invoice.total).toFixed(2)}
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${

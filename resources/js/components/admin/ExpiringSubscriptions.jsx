@@ -68,7 +68,7 @@ export default function ExpiringSubscriptions({ subscriptions = [] }) {
                                         </span>
                                     </td>
                                     <td className="px-3 sm:px-6 py-4 text-sm font-medium text-slate-900 dark:text-white text-right">
-                                        € {sub.price.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}
+                                        dh {sub.price.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}
                                     </td>
                                 </tr>
                             );

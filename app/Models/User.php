@@ -32,6 +32,12 @@ class User extends Authenticatable
         'password',
         'role',
         'phone',
+        'student_uid',
+        'birth_date',
+        'inscription_date',
+        'school_id',
+        'teacher_uid',
+        'hire_date',
     ];
 
     /**
@@ -54,6 +60,10 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'birth_date' => 'date',
+            'inscription_date' => 'date',
+            'school_id' => 'integer',
+            'hire_date' => 'date',
         ];
     }
 
@@ -83,6 +93,13 @@ class User extends Authenticatable
     }
 
     public function courses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class, 'course_user')
+            ->withPivot(['enrolled_at', 'status'])
+            ->withTimestamps();
+    }
+
+    public function enrolledCourses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'course_user')
             ->withPivot(['enrolled_at', 'status'])

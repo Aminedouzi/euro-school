@@ -230,7 +230,7 @@ export default function SubscriptionsList() {
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                    Prix (€) *
+                                    Prix (dh) *
                                 </label>
                                 <input
                                     type="number"
@@ -383,7 +383,7 @@ export default function SubscriptionsList() {
                                         <div className="text-xs">{subscription.plan_type}</div>
                                     </td>
                                     <td className="px-6 py-4 text-slate-900 dark:text-white font-semibold">
-                                        €{parseFloat(subscription.price).toFixed(2)}
+                                        dh{parseFloat(subscription.price).toFixed(2)}
                                     </td>
                                     <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
                                         {BILLING_CYCLES.find(c => c.value === subscription.billing_cycle)?.label}
