@@ -1,0 +1,36 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="200" cy="200" r="190" fill="#1e40af" stroke="#ffffff" stroke-width="4"/>
+
+  <!-- Shield outline -->
+  <path d="M 200 60 L 320 120 L 320 200 C 320 280 200 340 200 340 C 200 340 80 280 80 200 L 80 120 Z"
+        fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+
+  <!-- Inner white box -->
+  <rect x="110" y="150" width="180" height="100" fill="#ffffff" rx="8"/>
+
+  <!-- ESS text in box -->
+  <text x="200" y="195" font-size="48" font-weight="bold" text-anchor="middle" fill="#1e40af" font-family="Arial, sans-serif">
+    ESS
+  </text>
+
+  <!-- Bottom text -->
+  <text x="200" y="235" font-size="14" font-weight="600" text-anchor="middle" fill="#1e40af" font-family="Arial, sans-serif">
+    EUROSCHOOL SYSTEM
+  </text>
+
+  <!-- Stars at top -->
+  <g fill="#fbbf24">
+    <path d="M 150 90 L 155 105 L 170 105 L 158 115 L 163 130 L 150 120 L 137 130 L 142 115 L 130 105 L 145 105 Z" transform="scale(0.8)"/>
+    <path d="M 200 75 L 210 100 L 235 100 L 215 120 L 225 145 L 200 125 L 175 145 L 185 120 L 165 100 L 190 100 Z"/>
+    <path d="M 250 90 L 255 105 L 270 105 L 258 115 L 263 130 L 250 120 L 237 130 L 242 115 L 230 105 L 245 105 Z" transform="scale(0.8)"/>
+  </g>
+
+  <!-- Left laurel wreath -->
+  <path d="M 100 240 Q 110 220 120 230 Q 115 250 105 260"
+        stroke="#fbbf24" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Right laurel wreath -->
+  <path d="M 300 240 Q 290 220 280 230 Q 285 250 295 260"
+        stroke="#fbbf24" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>
