@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import api from '../../api';
 
-const SCHOOLS = Array.from({ length: 13 }, (_, i) => i + 1);
-
 export default function StudentsList() {
     const [students, setStudents] = useState([]);
     const [courses, setCourses] = useState([]);
+    const [schools, setSchools] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showForm, setShowForm] = useState(false);
@@ -18,12 +17,13 @@ export default function StudentsList() {
         birth_date: '',
         inscription_date: new Date().toISOString().split('T')[0],
         school_id: '',
-        course_id: '',
+        course_ids: [],
     });
 
     useEffect(() => {
         fetchStudents();
         fetchCourses();
+        fetchSchools();
     }, []);
 
     const fetchStudents = async () => {
@@ -53,9 +53,29 @@ export default function StudentsList() {
         }
     };
 
+    const fetchSchools = async () => {
+        try {
+            const { data } = await api.get('/schools');
+            setSchools(data.schools || []);
+        } catch {
+            setSchools([]);
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleCourseToggle = (courseId) => {
+        setFormData(prev => {
+            const ids = prev.course_ids || [];
+            const idx = ids.findIndex(id => Number(id) === Number(courseId));
+            if (idx === -1) {
+                return { ...prev, course_ids: [...ids, courseId] };
+            }
+            return { ...prev, course_ids: ids.filter((_, i) => i !== idx) };
+        });
     };
 
     const handleSubmit = async (e) => {
@@ -68,7 +88,9 @@ export default function StudentsList() {
             if (!payload.birth_date) payload.birth_date = null;
             if (!payload.inscription_date) payload.inscription_date = null;
             if (!payload.school_id) payload.school_id = null;
-            if (!payload.course_id) payload.course_id = null;
+            if (!payload.course_ids || payload.course_ids.length === 0) {
+                payload.course_ids = [];
+            }
 
             if (editingId) {
                 await api.put(`/users/${editingId}`, payload);
@@ -96,7 +118,7 @@ export default function StudentsList() {
             birth_date: student.birth_date || '',
             inscription_date: student.inscription_date || '',
             school_id: student.school_id || '',
-            course_id: student.course_id || '',
+            course_ids: student.course_ids || [],
         });
         setEditingId(student.id);
         setShowForm(true);
@@ -122,11 +144,13 @@ export default function StudentsList() {
             birth_date: '',
             inscription_date: new Date().toISOString().split('T')[0],
             school_id: '',
-            course_id: '',
+            course_ids: [],
         });
         setShowForm(false);
         setEditingId(null);
     };
+
+    const schoolName = (id) => schools.find(s => Number(s.id) === Number(id))?.name || (id ? `École #${id}` : '—');
 
     if (loading) {
         return <div className="text-slate-500">Chargement...</div>;
@@ -155,7 +179,6 @@ export default function StudentsList() {
                 </div>
             )}
 
-            {/* FORM */}
             {showForm && (
                 <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 space-y-4">
                     <h2 className="text-lg font-semibold text-slate-800 dark:text-white">
@@ -164,32 +187,18 @@ export default function StudentsList() {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                            {/* Name */}
                             <div>
                                 <label className={labelCls}>Nom complet *</label>
                                 <input type="text" name="name" value={formData.name} onChange={handleInputChange} required className={inputCls} />
                             </div>
-
-                            {/* Unique student ID */}
-                            <div>
-                                <label className={labelCls}>Identifiant élève</label>
-                                <input type="text" name="student_uid" value={formData.student_uid} onChange={handleInputChange} placeholder="ex: ES-2026-001" className={inputCls} />
-                            </div>
-
-                            {/* Email */}
                             <div>
                                 <label className={labelCls}>Email *</label>
                                 <input type="email" name="email" value={formData.email} onChange={handleInputChange} required className={inputCls} />
                             </div>
-
-                            {/* Phone */}
                             <div>
                                 <label className={labelCls}>Téléphone</label>
                                 <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className={inputCls} />
                             </div>
-
-                            {/* Password */}
                             <div>
                                 <label className={labelCls}>Mot de passe {!editingId && '*'}</label>
                                 <input
@@ -202,39 +211,48 @@ export default function StudentsList() {
                                     className={inputCls}
                                 />
                             </div>
-
-                            {/* Birth date */}
                             <div>
                                 <label className={labelCls}>Date de naissance</label>
                                 <input type="date" name="birth_date" value={formData.birth_date} onChange={handleInputChange} className={inputCls} />
                             </div>
-
-                            {/* Inscription date */}
                             <div>
                                 <label className={labelCls}>Date d'inscription</label>
                                 <input type="date" name="inscription_date" value={formData.inscription_date} onChange={handleInputChange} className={inputCls} />
                             </div>
-
-                            {/* School ID */}
                             <div>
-                                <label className={labelCls}>École (1–13)</label>
+                                <label className={labelCls}>École</label>
                                 <select name="school_id" value={formData.school_id} onChange={handleInputChange} className={inputCls}>
                                     <option value="">— Sélectionner —</option>
-                                    {SCHOOLS.map(n => (
-                                        <option key={n} value={n}>École {n}</option>
+                                    {schools.map(s => (
+                                        <option key={s.id} value={s.id}>{s.name}</option>
                                     ))}
                                 </select>
                             </div>
+                        </div>
 
-                            {/* Course */}
-                            <div className="md:col-span-2">
-                                <label className={labelCls}>Cours d'inscription</label>
-                                <select name="course_id" value={formData.course_id} onChange={handleInputChange} className={inputCls}>
-                                    <option value="">— Aucun cours —</option>
-                                    {courses.map(c => (
-                                        <option key={c.id} value={c.id}>{c.title}</option>
-                                    ))}
-                                </select>
+                        <div>
+                            <label className={labelCls}>Cours (plusieurs possibles)</label>
+                            <div className="space-y-2 border border-slate-300 dark:border-slate-600 rounded-lg p-3 bg-slate-50 dark:bg-slate-700 max-h-48 overflow-y-auto">
+                                {courses.length > 0 ? (
+                                    courses.map(course => (
+                                        <label key={course.id} className="flex items-center cursor-pointer gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={(formData.course_ids || []).some(id => Number(id) === Number(course.id))}
+                                                onChange={() => handleCourseToggle(course.id)}
+                                                className="w-4 h-4"
+                                            />
+                                            <span className="text-slate-900 dark:text-white text-sm">
+                                                {course.title}
+                                                {course.school?.name ? (
+                                                    <span className="text-slate-500 dark:text-slate-400"> — {course.school.name}</span>
+                                                ) : null}
+                                            </span>
+                                        </label>
+                                    ))
+                                ) : (
+                                    <div className="text-slate-500 dark:text-slate-400 text-sm">Aucun cours disponible</div>
+                                )}
                             </div>
                         </div>
 
@@ -250,7 +268,6 @@ export default function StudentsList() {
                 </div>
             )}
 
-            {/* TABLE */}
             {students.length > 0 ? (
                 <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-x-auto">
                     <table className="w-full text-sm">
@@ -269,8 +286,10 @@ export default function StudentsList() {
                         </thead>
                         <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                             {students.map(student => {
-                                const courseId = student.course_id ? Number(student.course_id) : null;
-                                const courseName = courses.find(c => Number(c.id) === courseId)?.title;
+                                const names = (student.course_ids || [])
+                                    .map(cid => courses.find(c => Number(c.id) === Number(cid))?.title)
+                                    .filter(Boolean)
+                                    .join(', ');
                                 return (
                                     <tr key={student.id} className="hover:bg-slate-50 dark:hover:bg-slate-700">
                                         <td className="px-4 py-3 text-slate-500 dark:text-slate-400 font-mono text-xs">
@@ -286,10 +305,10 @@ export default function StudentsList() {
                                             {student.inscription_date ? new Date(student.inscription_date).toLocaleDateString('fr-FR') : new Date(student.created_at).toLocaleDateString('fr-FR')}
                                         </td>
                                         <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
-                                            {student.school_id ? `École ${student.school_id}` : '—'}
+                                            {schoolName(student.school_id)}
                                         </td>
-                                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 max-w-[140px] truncate">
-                                            {courseName || '—'}
+                                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 max-w-[200px] text-xs">
+                                            {names || '—'}
                                         </td>
                                         <td className="px-4 py-3 space-x-2 whitespace-nowrap">
                                             <button onClick={() => handleEdit(student)} className="text-blue-600 hover:text-blue-700 font-medium transition">

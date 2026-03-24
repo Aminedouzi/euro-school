@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Course extends Model
 {
     protected $fillable = [
+        'school_id',
         'title',
         'type',
         'description',
@@ -26,6 +27,11 @@ class Course extends Model
             'end_date' => 'date',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function school(): BelongsTo
+    {
+        return $this->belongsTo(School::class);
     }
 
     public function teacher(): BelongsTo

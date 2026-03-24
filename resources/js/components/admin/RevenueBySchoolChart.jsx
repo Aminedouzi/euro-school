@@ -18,30 +18,22 @@ ChartJS.register(
     Legend
 );
 
-export default function StudentDistributionChart({ data }) {
-    const items = Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0] !== null && 'label' in data[0]
-        ? data
-        : null;
-
-    const labels = items
-        ? items.map((i) => i.label)
-        : ['A1 Intro', 'A2 Basic', 'B1 Inter', 'B2 Adv'];
-
-    const counts = items
-        ? items.map((i) => i.count)
-        : (data && data.length > 0 ? data : [245, 185, 128, 75]);
+export default function RevenueBySchoolChart({ data }) {
+    const rows = Array.isArray(data) ? data : [];
+    const labels = rows.map((r) => r.school_name || '—');
+    const totals = rows.map((r) => Number(r.total) || 0);
 
     const chartData = {
         labels,
         datasets: [
             {
-                label: 'Nombre d\'élèves',
-                data: counts,
-                backgroundColor: '#4f46e5',
-                borderColor: '#4f46e5',
+                label: 'Revenu (DH)',
+                data: totals,
+                backgroundColor: '#059669',
+                borderColor: '#047857',
                 borderWidth: 0,
                 borderRadius: 8,
-                hoverBackgroundColor: '#6366f1',
+                hoverBackgroundColor: '#10b981',
             },
         ],
     };
@@ -56,11 +48,10 @@ export default function StudentDistributionChart({ data }) {
             tooltip: {
                 backgroundColor: 'rgba(0, 0, 0, 0.8)',
                 padding: 12,
-                titleFont: { size: 14, weight: 'bold' },
-                bodyFont: { size: 13 },
                 callbacks: {
                     label: function (context) {
-                        return context.parsed.y + ' élèves';
+                        const v = context.parsed.y;
+                        return ` ${v.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} DH`;
                     },
                 },
             },
@@ -71,7 +62,6 @@ export default function StudentDistributionChart({ data }) {
                 ticks: {
                     color: '#94a3b8',
                     font: { size: 12 },
-                    stepSize: 1,
                 },
                 grid: {
                     color: 'rgba(148, 163, 184, 0.1)',
@@ -92,6 +82,14 @@ export default function StudentDistributionChart({ data }) {
             },
         },
     };
+
+    if (rows.length === 0) {
+        return (
+            <p className="text-sm text-slate-500 dark:text-slate-400 py-8 text-center">
+                Aucun paiement complété à attribuer par école.
+            </p>
+        );
+    }
 
     return <Bar data={chartData} options={options} height={300} />;
 }

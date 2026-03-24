@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Subscription;
 use App\Models\Payment;
+use App\Models\School;
+use App\Models\Subscription;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
@@ -57,13 +58,46 @@ class AdminDashboardController extends Controller
             $monthly_revenue_data[] = (float)$revenue;
         }
 
-        // Student distribution by course (or mock if no courses)
-        $student_distribution = [
-            User::where('role', 'student')->count(),
-            intval(User::where('role', 'student')->count() * 0.75),
-            intval(User::where('role', 'student')->count() * 0.5),
-            intval(User::where('role', 'student')->count() * 0.25),
-        ];
+        // Students per school (real counts)
+        $schoolNames = School::query()->orderBy('id')->pluck('name', 'id');
+        $student_distribution = User::query()
+            ->where('role', 'student')
+            ->selectRaw('school_id, COUNT(*) as c')
+            ->groupBy('school_id')
+            ->orderByRaw('CASE WHEN school_id IS NULL THEN 1 ELSE 0 END, school_id')
+            ->get()
+            ->map(function ($row) use ($schoolNames) {
+                $sid = $row->school_id;
+
+                return [
+                    'school_id' => $sid !== null ? (int) $sid : null,
+                    'label' => $sid !== null ? ($schoolNames[(int) $sid] ?? 'École #'.$sid) : 'Sans école',
+                    'count' => (int) $row->c,
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        // Completed payment totals by school: course.school_id if linked to a course, else payer's school_id
+        $revenue_by_school = Payment::query()
+            ->where('payments.status', 'completed')
+            ->join('users', 'payments.user_id', '=', 'users.id')
+            ->leftJoin('courses', 'payments.course_id', '=', 'courses.id')
+            ->selectRaw('COALESCE(courses.school_id, users.school_id) as agg_school_id')
+            ->selectRaw('SUM(payments.amount) as total')
+            ->groupBy(DB::raw('COALESCE(courses.school_id, users.school_id)'))
+            ->get()
+            ->map(function ($row) use ($schoolNames) {
+                $sid = $row->agg_school_id;
+
+                return [
+                    'school_id' => $sid !== null ? (int) $sid : null,
+                    'school_name' => $sid !== null ? ($schoolNames[(int) $sid] ?? 'École #'.$sid) : 'Non attribué',
+                    'total' => (float) $row->total,
+                ];
+            })
+            ->values()
+            ->toArray();
 
         // Recent payments (real data from database)
         $recent_payments = Payment::with('user')
@@ -188,6 +222,7 @@ class AdminDashboardController extends Controller
                 'revenue_growth' => $revenue_growth,
                 'monthly_revenue_data' => $monthly_revenue_data,
                 'student_distribution' => $student_distribution,
+                'revenue_by_school' => $revenue_by_school,
                 'recent_payments' => $recent_payments,
                 'expiring_subscriptions' => $expiring_subscriptions,
                 'students_due_today' => $students_due_today,

@@ -27,7 +27,9 @@ export default function Layout() {
         navLinks.push({ to: '/admin/users', label: 'Utilisateurs' });
         navLinks.push({ to: '/admin/students', label: 'Élèves' });
         navLinks.push({ to: '/admin/teachers', label: 'Professeurs' });
+        navLinks.push({ to: '/admin/schools', label: 'Écoles' });
         navLinks.push({ to: '/admin/courses', label: 'Cours' });
+        navLinks.push({ to: '/admin/school-expenses', label: 'Dépenses école' });
         navLinks.push({ to: '/admin/payments', label: 'Paiements' });
         navLinks.push({ to: '/admin/invoices', label: 'Factures' });
         navLinks.push({ to: '/admin/subscriptions', label: 'Abonnements' });

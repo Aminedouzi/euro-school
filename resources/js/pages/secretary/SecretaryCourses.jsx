@@ -24,7 +24,9 @@ export default function SecretaryCourses() {
                     courses.map((c) => (
                         <div key={c.id} className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                             <h3 className="font-medium text-slate-800 dark:text-white">{c.title}</h3>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">{c.type} • {c.teacher?.name ?? 'Sans professeur'}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                                {c.school?.name ? `${c.school.name} • ` : ''}{c.type} • {c.teacher?.name ?? 'Sans professeur'}
+                            </p>
                             <p className="text-xs text-slate-500 mt-1">{c.students?.length ?? 0} élève(s)</p>
                         </div>
                     ))

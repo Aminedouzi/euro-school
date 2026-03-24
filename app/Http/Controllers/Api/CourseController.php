@@ -12,11 +12,11 @@ class CourseController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $query = Course::query()->with(['teacher']);
+        $query = Course::query()->with(['teacher', 'school']);
 
         if ($user->role === 'admin') {
             // Les admins voient tous les cours
-            return response()->json(['courses' => Course::with('teacher')->orderBy('title')->get()]);
+            return response()->json(['courses' => Course::with(['teacher', 'school'])->orderBy('title')->get()]);
         }
         if ($user->role === 'student') {
             $query->where('is_active', true);
@@ -37,6 +37,7 @@ class CourseController extends Controller
         }
 
         $validated = $request->validate([
+            'school_id' => ['required', 'exists:schools,id'],
             'title' => ['required', 'string', 'max:255'],
             'type' => ['required', 'string', 'in:communication,langue'],
             'description' => ['nullable', 'string'],
@@ -47,18 +48,18 @@ class CourseController extends Controller
             'is_active' => ['sometimes', 'boolean'],
         ]);
 
-        $validated['teacher_id'] = $validated['teacher_id'] ?? $request->user()->id;
+        $validated['teacher_id'] = $validated['teacher_id'] ?? null;
         $validated['max_students'] = $validated['max_students'] ?? 30;
         $validated['is_active'] = $validated['is_active'] ?? true;
 
         $course = Course::create($validated);
 
-        return response()->json(['course' => $course->load('teacher')], 201);
+        return response()->json(['course' => $course->load(['teacher', 'school'])], 201);
     }
 
     public function show(Course $course): JsonResponse
     {
-        $course->load(['teacher', 'students']);
+        $course->load(['teacher', 'students', 'school']);
         return response()->json(['course' => $course]);
     }
 
@@ -69,6 +70,7 @@ class CourseController extends Controller
         }
 
         $validated = $request->validate([
+            'school_id' => ['sometimes', 'required', 'exists:schools,id'],
             'title' => ['sometimes', 'string', 'max:255'],
             'type' => ['sometimes', 'string', 'in:communication,langue'],
             'description' => ['nullable', 'string'],
@@ -81,7 +83,7 @@ class CourseController extends Controller
 
         $course->update($validated);
 
-        return response()->json(['course' => $course->fresh()->load('teacher')]);
+        return response()->json(['course' => $course->fresh()->load(['teacher', 'school'])]);
     }
 
     public function destroy(Course $course): JsonResponse

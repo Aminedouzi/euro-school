@@ -113,7 +113,7 @@ export default function TeachersList() {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('ÃŠtes-vous sÃ»r de vouloir supprimer ce professeur ?')) return;
+        if (!confirm('Êtes-vous sûr de vouloir supprimer ce professeur ?')) return;
         try {
             setError('');
             await api.delete(`/users/${id}`);
@@ -225,7 +225,12 @@ export default function TeachersList() {
                                                 onChange={() => handleCourseToggle(course.id)}
                                                 className="w-4 h-4"
                                             />
-                                            <span className="text-slate-900 dark:text-white">{course.title}</span>
+                                            <span className="text-slate-900 dark:text-white">
+                                                {course.title}
+                                                {course.school?.name ? (
+                                                    <span className="text-slate-500 dark:text-slate-400 text-sm"> — {course.school.name}</span>
+                                                ) : null}
+                                            </span>
                                         </label>
                                     ))
                                 ) : (
@@ -297,7 +302,7 @@ export default function TeachersList() {
                 </div>
             ) : (
                 <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-                    Aucun professeur trouvÃ©
+                    Aucun professeur trouvé
                 </div>
             )}
         </div>

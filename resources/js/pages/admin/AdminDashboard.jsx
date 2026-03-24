@@ -3,6 +3,7 @@ import api from '../../api';
 import ThemeToggle from '../../components/ThemeToggle';
 import KPICard from '../../components/admin/KPICard';
 import RevenueChart from '../../components/admin/RevenueChart';
+import RevenueBySchoolChart from '../../components/admin/RevenueBySchoolChart';
 import StudentDistributionChart from '../../components/admin/StudentDistributionChart';
 import RecentPayments from '../../components/admin/RecentPayments';
 import ExpiringSubscriptions from '../../components/admin/ExpiringSubscriptions';
@@ -129,10 +130,17 @@ export default function AdminDashboard() {
 
                 <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-slate-200 dark:border-slate-700">
                     <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">
-                        Répartition des Élèves par Groupe
+                        Élèves par école
                     </h2>
                     <StudentDistributionChart data={data?.student_distribution || []} />
                 </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-slate-200 dark:border-slate-700">
+                <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">
+                    Revenu total par école (paiements complétés)
+                </h2>
+                <RevenueBySchoolChart data={data?.revenue_by_school || []} />
             </div>
 
             {/* Recent Payments */}

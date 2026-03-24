@@ -9,11 +9,13 @@ const COURSE_TYPES = [
 export default function CoursesList() {
     const [courses, setCourses] = useState([]);
     const [teachers, setTeachers] = useState([]);
+    const [schools, setSchools] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({
+        school_id: '',
         title: '',
         type: 'communication',
         description: '',
@@ -24,10 +26,10 @@ export default function CoursesList() {
         is_active: true,
     });
 
-    // Load courses and teachers
     useEffect(() => {
         fetchCourses();
         fetchTeachers();
+        fetchSchools();
     }, []);
 
     const fetchCourses = async () => {
@@ -52,6 +54,15 @@ export default function CoursesList() {
         }
     };
 
+    const fetchSchools = async () => {
+        try {
+            const { data } = await api.get('/schools');
+            setSchools(data.schools || []);
+        } catch {
+            setSchools([]);
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -65,9 +76,14 @@ export default function CoursesList() {
         setError('');
 
         try {
+            if (!formData.school_id) {
+                setError('Veuillez sélectionner une école');
+                return;
+            }
             const submitData = {
                 ...formData,
-                max_students: parseInt(formData.max_students),
+                school_id: parseInt(formData.school_id, 10),
+                max_students: parseInt(formData.max_students, 10),
             };
 
             if (editingId) {
@@ -87,6 +103,7 @@ export default function CoursesList() {
 
     const handleEdit = (course) => {
         setFormData({
+            school_id: course.school_id || '',
             title: course.title,
             type: course.type,
             description: course.description || '',
@@ -114,6 +131,7 @@ export default function CoursesList() {
 
     const resetForm = () => {
         setFormData({
+            school_id: '',
             title: '',
             type: 'communication',
             description: '',
@@ -137,7 +155,22 @@ export default function CoursesList() {
                 <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Gestion des Cours</h1>
                 {!showForm && (
                     <button
-                        onClick={() => setShowForm(true)}
+                        type="button"
+                        onClick={() => {
+                            setEditingId(null);
+                            setFormData({
+                                school_id: schools[0]?.id ?? '',
+                                title: '',
+                                type: 'communication',
+                                description: '',
+                                start_date: '',
+                                end_date: '',
+                                teacher_id: '',
+                                max_students: 30,
+                                is_active: true,
+                            });
+                            setShowForm(true);
+                        }}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition w-full sm:w-auto"
                     >
                         ➕ Nouveau Cours
@@ -160,6 +193,23 @@ export default function CoursesList() {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                                    École *
+                                </label>
+                                <select
+                                    name="school_id"
+                                    value={formData.school_id}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                                >
+                                    <option value="">— Sélectionner —</option>
+                                    {schools.map(s => (
+                                        <option key={s.id} value={s.id}>{s.name}</option>
+                                    ))}
+                                </select>
+                            </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                                     Titre *
@@ -306,6 +356,7 @@ export default function CoursesList() {
                     <table className="w-full text-sm min-w-[980px]">
                         <thead className="bg-slate-100 dark:bg-slate-700">
                             <tr>
+                                <th className="px-3 sm:px-6 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">École</th>
                                 <th className="px-3 sm:px-6 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Titre</th>
                                 <th className="px-3 sm:px-6 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Type</th>
                                 <th className="px-3 sm:px-6 py-3 text-left font-semibold text-slate-700 dark:text-slate-300">Professeur</th>
@@ -318,6 +369,9 @@ export default function CoursesList() {
                         <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                             {courses.map(course => (
                                 <tr key={course.id} className="hover:bg-slate-50 dark:hover:bg-slate-700">
+                                    <td className="px-3 sm:px-6 py-4 text-slate-600 dark:text-slate-400 text-sm">
+                                        {course.school?.name || '—'}
+                                    </td>
                                     <td className="px-3 sm:px-6 py-4 text-slate-900 dark:text-white font-medium">{course.title}</td>
                                     <td className="px-3 sm:px-6 py-4 text-slate-600 dark:text-slate-400">
                                         <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${

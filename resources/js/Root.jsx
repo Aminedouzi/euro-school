@@ -14,6 +14,8 @@ import CoursesList from './pages/admin/CoursesList';
 import PaymentsList from './pages/admin/PaymentsList';
 import InvoicesList from './pages/admin/InvoicesList';
 import SubscriptionsList from './pages/admin/SubscriptionsList';
+import SchoolsList from './pages/admin/SchoolsList';
+import SchoolExpenses from './pages/admin/SchoolExpenses';
 import SecretaryCourses from './pages/secretary/SecretaryCourses';
 import SecretaryStudentsList from './pages/secretary/StudentsList';
 import TeacherCourses from './pages/teacher/TeacherCourses';
@@ -95,6 +97,22 @@ function AppRoutes() {
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <SubscriptionsList />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="admin/schools"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <SchoolsList />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="admin/school-expenses"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <SchoolExpenses />
                         </ProtectedRoute>
                     }
                 />
