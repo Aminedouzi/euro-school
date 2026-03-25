@@ -44,7 +44,6 @@ class FictiveMoroccanStudentsSeeder extends Seeder
                     'student_uid' => 'ES-MA-' . str_pad((string) ($index + 1), 4, '0', STR_PAD_LEFT),
                     'birth_date' => now()->subYears(rand(12, 22))->subDays(rand(0, 364))->toDateString(),
                     'inscription_date' => now()->subDays(rand(1, 180))->toDateString(),
-                    'school_id' => (($index % 13) + 1),
                 ]
             );
         }

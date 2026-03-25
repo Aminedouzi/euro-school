@@ -227,9 +227,6 @@ export default function TeachersList() {
                                             />
                                             <span className="text-slate-900 dark:text-white">
                                                 {course.title}
-                                                {course.school?.name ? (
-                                                    <span className="text-slate-500 dark:text-slate-400 text-sm"> — {course.school.name}</span>
-                                                ) : null}
                                             </span>
                                         </label>
                                     ))

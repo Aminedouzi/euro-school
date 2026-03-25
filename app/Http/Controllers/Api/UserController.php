@@ -108,15 +108,12 @@ class UserController extends Controller
             $validated['student_uid'] = null;
             $validated['birth_date'] = null;
             $validated['inscription_date'] = null;
-            $validated['school_id'] = null;
-
             return $validated;
         }
 
         $validated['student_uid'] = null;
         $validated['birth_date'] = null;
         $validated['inscription_date'] = null;
-        $validated['school_id'] = null;
         $validated['teacher_uid'] = null;
         $validated['hire_date'] = null;
 
@@ -143,7 +140,6 @@ class UserController extends Controller
                 'student_uid'      => $user->student_uid,
                 'birth_date'       => $user->birth_date?->format('Y-m-d'),
                 'inscription_date' => $user->inscription_date?->format('Y-m-d'),
-                'school_id'        => $user->school_id,
                 'course_ids'       => $courseIds,
             ];
         } elseif ($user->role === 'teacher') {
@@ -180,7 +176,6 @@ class UserController extends Controller
             'role'             => 'required|in:admin,secretary,teacher,student',
             'birth_date'       => 'nullable|date',
             'inscription_date' => 'nullable|date',
-            'school_id'        => 'nullable|exists:schools,id',
             'hire_date'        => 'nullable|date',
             'course_ids'       => 'nullable|array',
             'course_ids.*'     => 'exists:courses,id',
@@ -223,7 +218,6 @@ class UserController extends Controller
             'password'         => ['sometimes', 'nullable', Password::defaults()],
             'birth_date'       => 'nullable|date',
             'inscription_date' => 'nullable|date',
-            'school_id'        => 'nullable|exists:schools,id',
             'hire_date'        => 'nullable|date',
             'course_ids'       => 'nullable|array',
             'course_ids.*'     => 'exists:courses,id',

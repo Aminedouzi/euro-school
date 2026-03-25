@@ -1,72 +1,49 @@
-# euro-school
+# Euro School — projet de formation
 
-<p align="center">
-  <a href="https://laravel.com" target="_blank">
-    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
-  </a>
-</p>
+Application web simple pour gérer des **cours** et des **utilisateurs** (admin, professeur, élève).  
+Stack : **Laravel** (API + Sanctum) et **React** (Vite).
 
-<p align="center">
-  <a href="https://github.com/laravel/framework/actions">
-    <img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status">
-  </a>
-  <a href="https://packagist.org/packages/laravel/framework">
-    <img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads">
-  </a>
-  <a href="https://packagist.org/packages/laravel/framework">
-    <img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version">
-  </a>
-  <a href="https://packagist.org/packages/laravel/framework">
-    <img src="https://img.shields.io/packagist/l/laravel/framework" alt="License">
-  </a>
-</p>
+## Prérequis
 
-## About Laravel
+- PHP 8.2+ avec extensions courantes (pdo, mbstring, openssl, …)
+- Composer
+- Node.js 18+ et npm
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing)
-- [Powerful dependency injection container](https://laravel.com/docs/container)
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent)
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations)
-- [Robust background job processing](https://laravel.com/docs/queues)
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting)
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Getting started with GitLab
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps:
-
-### Add your files
-
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files  
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository:
+## Installation
 
 ```bash
-cd existing_repo
-git remote add origin https://gitlab.com/aminedouzi30029/euro-school.git
-git branch -M main
-git push -uf origin main
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+npm install
+```
+
+## Lancer en local
+
+Deux terminaux :
+
+```bash
+php artisan serve
+```
+
+```bash
+npm run dev
+```
+
+Ouvrir l’URL affichée par Vite (souvent `http://127.0.0.1:5173`) en pointant vers le front qui consomme l’API Laravel.
+
+Compte admin après seed : `admin@euroschool.com` / `password`.
+
+## Fonctions principales
+
+- Connexion / inscription (élève ou professeur)
+- Admin : statistiques simples, utilisateurs, élèves, professeurs, cours, inscriptions sur les cours
+- Élève : catalogue des cours et inscription
+- Professeur : liste des cours liés
+
+## Tests PHP
+
+```bash
+php artisan test
+```

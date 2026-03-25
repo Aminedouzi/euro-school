@@ -293,15 +293,7 @@ export default function UsersList() {
                                                     onChange={() => handleCourseToggle(course.id)}
                                                     className="w-4 h-4"
                                                 />
-                                                <span className="text-slate-900 dark:text-white text-sm">
-                                                    {course.title}
-                                                    {course.school?.name ? (
-                                                        <span className="text-slate-500 dark:text-slate-400">
-                                                            {' '}
-                                                            — {course.school.name}
-                                                        </span>
-                                                    ) : null}
-                                                </span>
+                                                <span className="text-slate-900 text-sm">{course.title}</span>
                                             </label>
                                         ))
                                     ) : (

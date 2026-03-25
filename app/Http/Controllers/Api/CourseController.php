@@ -6,65 +6,29 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class CourseController extends Controller
 {
-    private function scheduleRules(): array
-    {
-        return [
-            'schedules' => ['nullable', 'array'],
-            'schedules.*.weekday' => ['required', 'integer', 'between:1,7'],
-            'schedules.*.start_time' => ['required', 'date_format:H:i'],
-            'schedules.*.end_time' => ['required', 'date_format:H:i'],
-        ];
-    }
-
-    /**
-     * @param  array<int, array{weekday: int, start_time: string, end_time: string}>  $schedules
-     */
-    private function assertSchedulesLogical(array $schedules): void
-    {
-        foreach ($schedules as $i => $slot) {
-            if (strcmp($slot['end_time'], $slot['start_time']) <= 0) {
-                throw ValidationException::withMessages([
-                    "schedules.$i.end_time" => ['La heure de fin doit être après le début.'],
-                ]);
-            }
-        }
-    }
-
-    /**
-     * @param  array<int, array{weekday: int, start_time: string, end_time: string}>  $schedules
-     */
-    private function syncCourseSchedules(Course $course, array $schedules): void
-    {
-        $course->schedules()->delete();
-        foreach (array_values($schedules) as $order => $row) {
-            $course->schedules()->create([
-                'weekday' => (int) $row['weekday'],
-                'start_time' => $row['start_time'],
-                'end_time' => $row['end_time'],
-                'sort_order' => $order,
-            ]);
-        }
-    }
-
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $query = Course::query()->with(['teachers', 'school', 'schedules']);
+        $query = Course::query()->with(['teachers']);
 
         if ($user->role === 'admin') {
             return response()->json([
-                'courses' => Course::with(['teachers', 'students', 'school', 'schedules'])
+                'courses' => Course::with(['teachers', 'students'])
                     ->orderBy('title')
                     ->get(),
             ]);
         }
         if ($user->role === 'student') {
-            $query->where('is_active', true)
-                ->whereHas('students', fn ($q) => $q->where('users.id', $user->id));
+            return response()->json([
+                'courses' => Course::query()
+                    ->with(['teachers'])
+                    ->where('is_active', true)
+                    ->orderBy('title')
+                    ->get(),
+            ]);
         }
         if ($user->role === 'teacher') {
             $query->where(function ($q) use ($user) {
@@ -73,9 +37,7 @@ class CourseController extends Controller
             });
         }
 
-        $courses = $query->orderBy('title')->get();
-
-        return response()->json(['courses' => $courses]);
+        return response()->json(['courses' => $query->orderBy('title')->get()]);
     }
 
     public function store(Request $request): JsonResponse
@@ -84,8 +46,7 @@ class CourseController extends Controller
             return response()->json(['message' => 'Seuls les administrateurs peuvent créer des cours'], 403);
         }
 
-        $validated = $request->validate(array_merge([
-            'school_id' => ['required', 'exists:schools,id'],
+        $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'type' => ['required', 'string', 'in:communication,langue'],
             'description' => ['nullable', 'string'],
@@ -97,15 +58,10 @@ class CourseController extends Controller
             'student_ids.*' => ['exists:users,id'],
             'max_students' => ['integer', 'min:1', 'max:500'],
             'is_active' => ['sometimes', 'boolean'],
-        ], $this->scheduleRules()));
+        ]);
 
         $validated['max_students'] = $validated['max_students'] ?? 30;
         $validated['is_active'] = $validated['is_active'] ?? true;
-
-        $schedules = $validated['schedules'] ?? [];
-        unset($validated['schedules']);
-
-        $this->assertSchedulesLogical($schedules);
 
         $teacherIds = $validated['teacher_ids'] ?? [];
         $studentIds = $validated['student_ids'] ?? [];
@@ -118,16 +74,14 @@ class CourseController extends Controller
         if ($studentIds !== []) {
             $course->students()->sync($studentIds);
         }
-        if ($schedules !== []) {
-            $this->syncCourseSchedules($course, $schedules);
-        }
 
-        return response()->json(['course' => $course->load(['teachers', 'students', 'school', 'schedules'])], 201);
+        return response()->json(['course' => $course->load(['teachers', 'students'])], 201);
     }
 
     public function show(Course $course): JsonResponse
     {
-        $course->load(['teachers', 'students', 'school', 'schedules']);
+        $course->load(['teachers', 'students']);
+
         return response()->json(['course' => $course]);
     }
 
@@ -137,8 +91,7 @@ class CourseController extends Controller
             return response()->json(['message' => 'Seuls les administrateurs peuvent modifier des cours'], 403);
         }
 
-        $validated = $request->validate(array_merge([
-            'school_id' => ['sometimes', 'required', 'exists:schools,id'],
+        $validated = $request->validate([
             'title' => ['sometimes', 'string', 'max:255'],
             'type' => ['sometimes', 'string', 'in:communication,langue'],
             'description' => ['nullable', 'string'],
@@ -150,14 +103,7 @@ class CourseController extends Controller
             'student_ids.*' => ['exists:users,id'],
             'max_students' => ['sometimes', 'integer', 'min:1', 'max:500'],
             'is_active' => ['sometimes', 'boolean'],
-        ], $this->scheduleRules()));
-
-        $syncSchedules = array_key_exists('schedules', $validated);
-        $schedules = $validated['schedules'] ?? [];
-        if ($syncSchedules) {
-            unset($validated['schedules']);
-            $this->assertSchedulesLogical($schedules);
-        }
+        ]);
 
         $course->update($validated);
         if (isset($validated['teacher_ids'])) {
@@ -166,11 +112,8 @@ class CourseController extends Controller
         if (isset($validated['student_ids'])) {
             $course->students()->sync($validated['student_ids']);
         }
-        if ($syncSchedules) {
-            $this->syncCourseSchedules($course, $schedules);
-        }
 
-        return response()->json(['course' => $course->fresh()->load(['teachers', 'students', 'school', 'schedules'])]);
+        return response()->json(['course' => $course->fresh()->load(['teachers', 'students'])]);
     }
 
     public function destroy(Course $course): JsonResponse
@@ -180,6 +123,7 @@ class CourseController extends Controller
         }
 
         $course->delete();
+
         return response()->json(['message' => 'Cours supprimé avec succès'], 200);
     }
 
@@ -193,6 +137,7 @@ class CourseController extends Controller
             return response()->json(['message' => 'Cours complet'], 422);
         }
         $course->students()->attach($studentId, ['enrolled_at' => now(), 'status' => 'active']);
+
         return response()->json(['message' => 'Inscription réussie'], 201);
     }
 
@@ -200,6 +145,7 @@ class CourseController extends Controller
     {
         $studentId = $request->input('user_id', $request->user()->id);
         $course->students()->detach($studentId);
+
         return response()->json(['message' => 'Désinscription effectuée']);
     }
 }

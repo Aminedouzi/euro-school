@@ -10,9 +10,7 @@ use Tests\TestCase;
 class AdminDashboardTest extends TestCase
 {
     use RefreshDatabase;
-    /**
-     * Test that admin can access dashboard stats
-     */
+
     public function test_admin_can_access_dashboard_stats(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
@@ -24,24 +22,15 @@ class AdminDashboardTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' => [
+                'total_users',
                 'total_students',
-                'active_subscriptions',
-                'monthly_revenue',
-                'pending_payments',
-                'student_growth',
-                'subscription_growth',
-                'revenue_growth',
-                'monthly_revenue_data',
-                'student_distribution',
-                'revenue_by_school',
-                'recent_payments',
+                'total_teachers',
+                'total_courses',
+                'total_enrollments',
             ],
         ]);
     }
 
-    /**
-     * Test that non-admin users cannot access dashboard stats
-     */
     public function test_non_admin_cannot_access_dashboard_stats(): void
     {
         $user = User::factory()->create(['role' => 'student']);
@@ -53,9 +42,6 @@ class AdminDashboardTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /**
-     * Test unauthenticated users cannot access dashboard stats
-     */
     public function test_unauthenticated_cannot_access_dashboard_stats(): void
     {
         $response = $this->getJson('/api/admin/dashboard-stats');
