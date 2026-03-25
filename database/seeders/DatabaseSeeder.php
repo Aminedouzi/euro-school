@@ -32,6 +32,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FictiveMoroccanStudentsSeeder::class,
             FictiveMoroccanTeachersSeeder::class,
+            CourseSeeder::class,
+            ClassSeeder::class,
+        ]);
+        $this->call([
             StudentPaymentsSeeder::class,
         ]);
     }
