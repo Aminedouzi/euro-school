@@ -6,11 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\School;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class SchoolController extends Controller
 {
+    private function schoolsTableMissingResponse(): JsonResponse
+    {
+        return response()->json([
+            'message' => 'La table schools est absente. Exécutez : php artisan migrate',
+        ], 503);
+    }
+
     public function index(Request $request): JsonResponse
     {
+        if (! Schema::hasTable('schools')) {
+            return response()->json(['schools' => []]);
+        }
+
         $schools = School::query()->orderBy('name')->get();
 
         return response()->json(['schools' => $schools]);
@@ -20,6 +32,10 @@ class SchoolController extends Controller
     {
         if ($request->user()->role !== 'admin') {
             return response()->json(['message' => 'Non autorisé'], 403);
+        }
+
+        if (! Schema::hasTable('schools')) {
+            return $this->schoolsTableMissingResponse();
         }
 
         $validated = $request->validate([

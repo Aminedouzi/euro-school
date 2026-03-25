@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api';
 
 export default function TeacherCourses() {
@@ -22,9 +23,20 @@ export default function TeacherCourses() {
                     <p className="text-slate-500">Vous n’avez pas encore de cours assignés.</p>
                 ) : (
                     courses.map((c) => (
-                        <div key={c.id} className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-                            <h3 className="font-medium text-slate-800 dark:text-white">{c.title}</h3>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">{c.type}</p>
+                        <div
+                            key={c.id}
+                            className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col gap-3"
+                        >
+                            <div>
+                                <h3 className="font-medium text-slate-800 dark:text-white">{c.title}</h3>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">{c.type}</p>
+                            </div>
+                            <Link
+                                to={`/teacher/courses/${c.id}/sessions`}
+                                className="inline-flex text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
+                            >
+                                Présences par séance →
+                            </Link>
                         </div>
                     ))
                 )}

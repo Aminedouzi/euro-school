@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api';
 
 export default function StudentsList() {
@@ -311,6 +312,12 @@ export default function StudentsList() {
                                             {names || '—'}
                                         </td>
                                         <td className="px-4 py-3 space-x-2 whitespace-nowrap">
+                                            <Link
+                                                to={`/admin/students/${student.id}/absences`}
+                                                className="inline-block px-3 py-1 rounded font-medium transition outline-none text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 focus:ring-2 focus:ring-amber-400"
+                                            >
+                                                Absences
+                                            </Link>
                                             <button
                                                 onClick={() => handleEdit(student)}
                                                 className="px-3 py-1 rounded font-medium transition outline-none text-blue-600 hover:text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-400"

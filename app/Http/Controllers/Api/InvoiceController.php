@@ -5,23 +5,38 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class InvoiceController extends Controller
 {
+    private function paymentIdValidationRule(): array
+    {
+        return Schema::hasTable('payments')
+            ? ['nullable', 'exists:payments,id']
+            : ['nullable'];
+    }
+
     /**
      * List all invoices
      */
     public function index()
     {
-        $invoices = Invoice::with(['user', 'payment'])
-            ->orderBy('created_at', 'desc')
-            ->get()
+        if (! Schema::hasTable('invoices')) {
+            return response()->json([]);
+        }
+
+        $query = Invoice::query()->with('user')->orderBy('created_at', 'desc');
+        if (Schema::hasTable('payments')) {
+            $query->with('payment');
+        }
+
+        $invoices = $query->get()
             ->map(function ($invoice) {
                 return [
                     'id' => $invoice->id,
                     'invoice_number' => $invoice->invoice_number,
                     'user_id' => $invoice->user_id,
-                    'user_name' => $invoice->user->name,
+                    'user_name' => $invoice->user?->name,
                     'payment_id' => $invoice->payment_id,
                     'subtotal' => (float) $invoice->subtotal,
                     'tax' => (float) $invoice->tax,
@@ -43,10 +58,16 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
+        if (! Schema::hasTable('invoices')) {
+            return response()->json([
+                'message' => 'La table invoices est absente. Exécutez : php artisan migrate',
+            ], 503);
+        }
+
         $validated = $request->validate([
             'invoice_number' => 'required|string|unique:invoices,invoice_number|max:255',
             'user_id' => 'required|exists:users,id',
-            'payment_id' => 'nullable|exists:payments,id',
+            'payment_id' => $this->paymentIdValidationRule(),
             'subtotal' => 'required|numeric|min:0',
             'tax' => 'sometimes|numeric|min:0',
             'total' => 'required|numeric|min:0',
@@ -65,7 +86,7 @@ class InvoiceController extends Controller
             'id' => $invoice->id,
             'invoice_number' => $invoice->invoice_number,
             'user_id' => $invoice->user_id,
-            'user_name' => $invoice->user->name,
+            'user_name' => $invoice->user?->name,
             'payment_id' => $invoice->payment_id,
             'subtotal' => (float) $invoice->subtotal,
             'tax' => (float) $invoice->tax,
@@ -87,7 +108,7 @@ class InvoiceController extends Controller
         $validated = $request->validate([
             'invoice_number' => 'sometimes|string|unique:invoices,invoice_number,' . $invoice->id . '|max:255',
             'user_id' => 'sometimes|exists:users,id',
-            'payment_id' => 'nullable|exists:payments,id',
+            'payment_id' => $this->paymentIdValidationRule(),
             'subtotal' => 'sometimes|numeric|min:0',
             'tax' => 'sometimes|numeric|min:0',
             'total' => 'sometimes|numeric|min:0',
@@ -104,7 +125,7 @@ class InvoiceController extends Controller
             'id' => $invoice->id,
             'invoice_number' => $invoice->invoice_number,
             'user_id' => $invoice->user_id,
-            'user_name' => $invoice->user->name,
+            'user_name' => $invoice->user?->name,
             'payment_id' => $invoice->payment_id,
             'subtotal' => (float) $invoice->subtotal,
             'tax' => (float) $invoice->tax,

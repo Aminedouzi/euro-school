@@ -19,6 +19,8 @@ import SchoolExpenses from './pages/admin/SchoolExpenses';
 import SecretaryCourses from './pages/secretary/SecretaryCourses';
 import SecretaryStudentsList from './pages/secretary/StudentsList';
 import TeacherCourses from './pages/teacher/TeacherCourses';
+import TeacherCourseSessions from './pages/teacher/TeacherCourseSessions';
+import StudentAbsences from './pages/admin/StudentAbsences';
 import CourseCatalog from './pages/student/CourseCatalog';
 import CourseCalendar from './pages/CourseCalendar';
 
@@ -28,18 +30,17 @@ function AppRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route
-                path="/"
                 element={
                     <ProtectedRoute>
                         <Layout />
                     </ProtectedRoute>
                 }
             >
-                <Route index element={<Navigate to="/dashboard" replace />} />
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="calendar" element={<CourseCalendar />} />
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/calendar" element={<CourseCalendar />} />
                 <Route
-                    path="admin/dashboard"
+                    path="/admin/dashboard"
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <AdminDashboard />
@@ -47,7 +48,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="admin/users"
+                    path="/admin/users"
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <UsersList />
@@ -55,7 +56,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="admin/students"
+                    path="/admin/students"
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <AdminStudentsList />
@@ -63,7 +64,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="admin/teachers"
+                    path="/admin/teachers"
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <AdminTeachersList />
@@ -71,7 +72,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="admin/courses"
+                    path="/admin/courses"
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <CoursesList />
@@ -79,7 +80,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="admin/payments"
+                    path="/admin/payments"
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <PaymentsList />
@@ -87,7 +88,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="admin/invoices"
+                    path="/admin/invoices"
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <InvoicesList />
@@ -95,7 +96,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="admin/subscriptions"
+                    path="/admin/subscriptions"
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <SubscriptionsList />
@@ -103,7 +104,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="admin/schools"
+                    path="/admin/schools"
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <SchoolsList />
@@ -111,7 +112,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="admin/school-expenses"
+                    path="/admin/school-expenses"
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <SchoolExpenses />
@@ -119,7 +120,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="secretary/courses"
+                    path="/secretary/courses"
                     element={
                         <ProtectedRoute allowedRoles={['secretary']}>
                             <SecretaryCourses />
@@ -127,7 +128,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="secretary/students"
+                    path="/secretary/students"
                     element={
                         <ProtectedRoute allowedRoles={['secretary']}>
                             <SecretaryStudentsList />
@@ -135,7 +136,7 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="teacher/courses"
+                    path="/teacher/courses"
                     element={
                         <ProtectedRoute allowedRoles={['teacher']}>
                             <TeacherCourses />
@@ -143,7 +144,31 @@ function AppRoutes() {
                     }
                 />
                 <Route
-                    path="student/catalog"
+                    path="/teacher/courses/:courseId/sessions/:sessionId"
+                    element={
+                        <ProtectedRoute allowedRoles={['teacher']}>
+                            <TeacherCourseSessions />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/teacher/courses/:courseId/sessions"
+                    element={
+                        <ProtectedRoute allowedRoles={['teacher']}>
+                            <TeacherCourseSessions />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/students/:studentId/absences"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <StudentAbsences />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/student/catalog"
                     element={
                         <ProtectedRoute allowedRoles={['student']}>
                             <CourseCatalog />

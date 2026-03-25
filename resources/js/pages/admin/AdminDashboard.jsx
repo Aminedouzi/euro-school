@@ -20,7 +20,12 @@ export default function AdminDashboard() {
                 const { data } = await api.get('/admin/dashboard-stats');
                 setData(data.data);
             } catch (err) {
-                setError('Erreur lors du chargement des données');
+                const apiMsg = err.response?.data?.message;
+                setError(
+                    apiMsg && typeof apiMsg === 'string'
+                        ? apiMsg
+                        : 'Erreur lors du chargement des données',
+                );
                 console.error(err);
             } finally {
                 setLoading(false);

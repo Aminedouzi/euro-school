@@ -31,9 +31,9 @@ export default defineConfig({
                 'http://[::1]:8000',
             ],
         },
+        // Omit port so HMR matches whatever port Vite binds (5174, 5175, …).
         hmr: {
             host: '127.0.0.1',
-            port: 5173,
             protocol: 'ws',
         },
         proxy: {

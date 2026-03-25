@@ -6,12 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Models\SchoolExpense;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class SchoolExpenseController extends Controller
 {
+    private function schoolExpensesTableMissingResponse(): JsonResponse
+    {
+        return response()->json([
+            'message' => 'La table school_expenses est absente. Exécutez : php artisan migrate',
+        ], 503);
+    }
+
     public function index(Request $request): JsonResponse
     {
-        $query = SchoolExpense::query()->with('school')->orderByDesc('paid_on');
+        if (! Schema::hasTable('school_expenses')) {
+            return response()->json(['expenses' => []]);
+        }
+
+        $query = SchoolExpense::query()->orderByDesc('paid_on');
+        if (Schema::hasTable('schools')) {
+            $query->with('school');
+        }
 
         if ($request->filled('school_id')) {
             $query->where('school_id', (int) $request->query('school_id'));
@@ -22,6 +37,16 @@ class SchoolExpenseController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (! Schema::hasTable('school_expenses')) {
+            return $this->schoolExpensesTableMissingResponse();
+        }
+
+        if (! Schema::hasTable('schools')) {
+            return response()->json([
+                'message' => 'La table schools est absente. Exécutez : php artisan migrate',
+            ], 503);
+        }
+
         $validated = $request->validate([
             'school_id' => ['required', 'exists:schools,id'],
             'title' => ['required', 'string', 'max:255'],

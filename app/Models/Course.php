@@ -57,4 +57,9 @@ class Course extends Model
             ->orderBy('sort_order')
             ->orderBy('start_time');
     }
+
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(CourseSession::class)->orderByDesc('session_date');
+    }
 }
