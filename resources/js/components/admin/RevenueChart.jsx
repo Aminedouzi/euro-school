@@ -30,7 +30,7 @@ export default function RevenueChart({ data }) {
         labels: months,
         datasets: [
             {
-                label: 'Revenu (€)',
+                label: 'Revenu (dh)',
                 data: revenues,
                 borderColor: '#4f46e5',
                 backgroundColor: 'rgba(79, 70, 229, 0.1)',
@@ -60,7 +60,7 @@ export default function RevenueChart({ data }) {
                 bodyFont: { size: 13 },
                 callbacks: {
                     label: function (context) {
-                        return '€ ' + context.parsed.y.toLocaleString('fr-FR', { minimumFractionDigits: 2 });
+                        return 'dh ' + context.parsed.y.toLocaleString('fr-FR', { minimumFractionDigits: 2 });
                     },
                 },
             },
@@ -70,7 +70,7 @@ export default function RevenueChart({ data }) {
                 beginAtZero: true,
                 ticks: {
                     callback: function (value) {
-                        return '€' + (value / 1000).toFixed(1) + 'k';
+                        return 'dh ' + (value / 1000).toFixed(1) + 'k';
                     },
                     color: '#94a3b8',
                     font: { size: 12 },

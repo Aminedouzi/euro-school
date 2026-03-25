@@ -230,7 +230,7 @@ export default function SubscriptionsList() {
 
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                    Prix (€) *
+                                    Prix (dh) *
                                 </label>
                                 <input
                                     type="number"
@@ -383,7 +383,7 @@ export default function SubscriptionsList() {
                                         <div className="text-xs">{subscription.plan_type}</div>
                                     </td>
                                     <td className="px-6 py-4 text-slate-900 dark:text-white font-semibold">
-                                        €{parseFloat(subscription.price).toFixed(2)}
+                                        dh{parseFloat(subscription.price).toFixed(2)}
                                     </td>
                                     <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
                                         {BILLING_CYCLES.find(c => c.value === subscription.billing_cycle)?.label}
@@ -401,13 +401,13 @@ export default function SubscriptionsList() {
                                     <td className="px-6 py-4 space-x-2">
                                         <button
                                             onClick={() => handleEdit(subscription)}
-                                            className="text-blue-600 hover:text-blue-700 font-medium transition"
+                                            className="px-3 py-1 rounded font-medium transition outline-none text-blue-600 hover:text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-400"
                                         >
                                             ✏️
                                         </button>
                                         <button
                                             onClick={() => handleDelete(subscription.id)}
-                                            className="text-red-600 hover:text-red-700 font-medium transition"
+                                            className="px-3 py-1 rounded font-medium transition outline-none text-red-600 hover:text-white hover:bg-red-600 focus:ring-2 focus:ring-red-400"
                                         >
                                             🗑️
                                         </button>

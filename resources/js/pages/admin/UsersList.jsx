@@ -10,6 +10,7 @@ const ROLES = [
 
 export default function UsersList() {
     const [users, setUsers] = useState([]);
+    const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showForm, setShowForm] = useState(false);
@@ -20,11 +21,12 @@ export default function UsersList() {
         password: '',
         phone: '',
         role: 'student',
+        course_ids: [],
     });
 
-    // Load users
     useEffect(() => {
         fetchUsers();
+        fetchCourses();
     }, []);
 
     const fetchUsers = async () => {
@@ -40,9 +42,39 @@ export default function UsersList() {
         }
     };
 
+    const fetchCourses = async () => {
+        try {
+            const { data } = await api.get('/courses');
+            const list = Array.isArray(data) ? data : Array.isArray(data?.courses) ? data.courses : [];
+            setCourses(list);
+        } catch {
+            setCourses([]);
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleRoleChange = (e) => {
+        const role = e.target.value;
+        setFormData(prev => ({
+            ...prev,
+            role,
+            course_ids: role === 'student' || role === 'teacher' ? prev.course_ids : [],
+        }));
+    };
+
+    const handleCourseToggle = (courseId) => {
+        setFormData(prev => {
+            const ids = prev.course_ids || [];
+            const idx = ids.findIndex(id => Number(id) === Number(courseId));
+            if (idx === -1) {
+                return { ...prev, course_ids: [...ids, courseId] };
+            }
+            return { ...prev, course_ids: ids.filter((_, i) => i !== idx) };
+        });
     };
 
     const handleSubmit = async (e) => {
@@ -50,19 +82,27 @@ export default function UsersList() {
         setError('');
 
         try {
+            const buildPayload = () => {
+                const payload = { ...formData };
+                if (payload.role !== 'student' && payload.role !== 'teacher') {
+                    delete payload.course_ids;
+                } else {
+                    payload.course_ids = payload.course_ids?.length ? payload.course_ids : [];
+                }
+                return payload;
+            };
+
             if (editingId) {
-                // Update
-                const updateData = { ...formData };
+                const updateData = buildPayload();
                 if (!updateData.password) delete updateData.password;
                 await api.put(`/users/${editingId}`, updateData);
                 setEditingId(null);
             } else {
-                // Create
                 if (!formData.password) {
                     setError('Le mot de passe est requis pour créer un utilisateur');
                     return;
                 }
-                await api.post('/users', formData);
+                await api.post('/users', buildPayload());
             }
             resetForm();
             await fetchUsers();
@@ -78,6 +118,10 @@ export default function UsersList() {
             password: '',
             phone: user.phone || '',
             role: user.role,
+            course_ids:
+                user.role === 'student' || user.role === 'teacher'
+                    ? user.course_ids || []
+                    : [],
         });
         setEditingId(user.id);
         setShowForm(true);
@@ -102,6 +146,7 @@ export default function UsersList() {
             password: '',
             phone: '',
             role: 'student',
+            course_ids: [],
         });
         setShowForm(false);
         setEditingId(null);
@@ -110,6 +155,11 @@ export default function UsersList() {
     if (loading) {
         return <div className="text-slate-500">Chargement...</div>;
     }
+
+    const showCoursePicker = formData.role === 'student' || formData.role === 'teacher';
+    const inputCls =
+        'w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white';
+    const labelCls = 'block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1';
 
     return (
         <div className="space-y-6">
@@ -203,9 +253,9 @@ export default function UsersList() {
                                 <select
                                     name="role"
                                     value={formData.role}
-                                    onChange={handleInputChange}
+                                    onChange={handleRoleChange}
                                     required
-                                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                                    className={inputCls}
                                 >
                                     {ROLES.map(role => (
                                         <option key={role.value} value={role.value}>
@@ -215,6 +265,53 @@ export default function UsersList() {
                                 </select>
                             </div>
                         </div>
+
+                        {showCoursePicker && (
+                            <div>
+                                <label className={labelCls}>
+                                    {formData.role === 'student'
+                                        ? 'Cours (inscrire l’élève)'
+                                        : 'Cours assignés à l’enseignant'}
+                                </label>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                                    {formData.role === 'student'
+                                        ? 'Cochez un ou plusieurs cours. Laisser vide pour aucune inscription pour l’instant.'
+                                        : 'Cochez les cours où cet enseignant intervient (mode liste simple).'}
+                                </p>
+                                <div className="space-y-2 border border-slate-300 dark:border-slate-600 rounded-lg p-3 bg-slate-50 dark:bg-slate-700/50 max-h-48 overflow-y-auto">
+                                    {courses.length > 0 ? (
+                                        courses.map(course => (
+                                            <label
+                                                key={course.id}
+                                                className="flex items-center cursor-pointer gap-2"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={(formData.course_ids || []).some(
+                                                        id => Number(id) === Number(course.id)
+                                                    )}
+                                                    onChange={() => handleCourseToggle(course.id)}
+                                                    className="w-4 h-4"
+                                                />
+                                                <span className="text-slate-900 dark:text-white text-sm">
+                                                    {course.title}
+                                                    {course.school?.name ? (
+                                                        <span className="text-slate-500 dark:text-slate-400">
+                                                            {' '}
+                                                            — {course.school.name}
+                                                        </span>
+                                                    ) : null}
+                                                </span>
+                                            </label>
+                                        ))
+                                    ) : (
+                                        <div className="text-slate-500 dark:text-slate-400 text-sm">
+                                            Aucun cours disponible
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="flex flex-col-reverse sm:flex-row gap-2 justify-end pt-4">
                             <button
@@ -267,13 +364,13 @@ export default function UsersList() {
                                     <td className="px-3 sm:px-6 py-4 space-x-2 whitespace-nowrap">
                                         <button
                                             onClick={() => handleEdit(user)}
-                                            className="text-blue-600 hover:text-blue-700 font-medium transition"
+                                            className="px-3 py-1 rounded font-medium transition outline-none text-blue-600 hover:text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-400"
                                         >
                                             ✏️ Modifier
                                         </button>
                                         <button
                                             onClick={() => handleDelete(user.id)}
-                                            className="text-red-600 hover:text-red-700 font-medium transition"
+                                            className="px-3 py-1 rounded font-medium transition outline-none text-red-600 hover:text-white hover:bg-red-600 focus:ring-2 focus:ring-red-400"
                                         >
                                             🗑️ Supprimer
                                         </button>

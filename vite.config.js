@@ -19,9 +19,28 @@ export default defineConfig({
     ],
     appType: 'spa',
     server: {
-        hmr: false,
+        // Bind one IPv4 address; avoid [::1] in public/hot (Windows issues)
+        host: '127.0.0.1',
+        port: 5173,
+        strictPort: false,
+        // Laravel page can be http://localhost:8000 OR http://127.0.0.1:8000 — different origin than :5173, so module scripts need CORS
+        cors: {
+            origin: [
+                'http://127.0.0.1:8000',
+                'http://localhost:8000',
+                'http://[::1]:8000',
+            ],
+        },
+        hmr: {
+            host: '127.0.0.1',
+            port: 5173,
+            protocol: 'ws',
+        },
         proxy: {
-            '/api': 'http://127.0.0.1:8000',
+            '/api': {
+                target: 'http://127.0.0.1:8000',
+                changeOrigin: true,
+            },
         },
     },
 });

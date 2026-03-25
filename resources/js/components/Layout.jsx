@@ -23,23 +23,29 @@ export default function Layout() {
     const navLinks = [];
     if (user?.role === 'admin') {
         navLinks.push({ to: '/dashboard', label: 'Tableau de bord' });
+        navLinks.push({ to: '/calendar', label: 'Calendrier' });
         navLinks.push({ to: '/admin/dashboard', label: 'Tableau de bord Admin' });
         navLinks.push({ to: '/admin/users', label: 'Utilisateurs' });
         navLinks.push({ to: '/admin/students', label: 'Élèves' });
         navLinks.push({ to: '/admin/teachers', label: 'Professeurs' });
+        navLinks.push({ to: '/admin/schools', label: 'Écoles' });
         navLinks.push({ to: '/admin/courses', label: 'Cours' });
+        navLinks.push({ to: '/admin/school-expenses', label: 'Dépenses école' });
         navLinks.push({ to: '/admin/payments', label: 'Paiements' });
         navLinks.push({ to: '/admin/invoices', label: 'Factures' });
         navLinks.push({ to: '/admin/subscriptions', label: 'Abonnements' });
     } else if (user?.role === 'secretary') {
         navLinks.push({ to: '/dashboard', label: 'Tableau de bord' });
+        navLinks.push({ to: '/calendar', label: 'Calendrier' });
         navLinks.push({ to: '/secretary/courses', label: 'Cours & inscriptions' });
         navLinks.push({ to: '/secretary/students', label: 'Élèves' });
     } else if (user?.role === 'teacher') {
         navLinks.push({ to: '/dashboard', label: 'Mes cours' });
+        navLinks.push({ to: '/calendar', label: 'Calendrier' });
         navLinks.push({ to: '/teacher/courses', label: 'Gérer les cours' });
     } else {
         navLinks.push({ to: '/dashboard', label: 'Mes cours' });
+        navLinks.push({ to: '/calendar', label: 'Calendrier' });
         navLinks.push({ to: '/student/catalog', label: 'Catalogue des cours' });
     }
 

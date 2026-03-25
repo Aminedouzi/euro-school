@@ -14,10 +14,13 @@ import CoursesList from './pages/admin/CoursesList';
 import PaymentsList from './pages/admin/PaymentsList';
 import InvoicesList from './pages/admin/InvoicesList';
 import SubscriptionsList from './pages/admin/SubscriptionsList';
+import SchoolsList from './pages/admin/SchoolsList';
+import SchoolExpenses from './pages/admin/SchoolExpenses';
 import SecretaryCourses from './pages/secretary/SecretaryCourses';
 import SecretaryStudentsList from './pages/secretary/StudentsList';
 import TeacherCourses from './pages/teacher/TeacherCourses';
 import CourseCatalog from './pages/student/CourseCatalog';
+import CourseCalendar from './pages/CourseCalendar';
 
 function AppRoutes() {
     return (
@@ -34,6 +37,7 @@ function AppRoutes() {
             >
                 <Route index element={<Navigate to="/dashboard" replace />} />
                 <Route path="dashboard" element={<Dashboard />} />
+                <Route path="calendar" element={<CourseCalendar />} />
                 <Route
                     path="admin/dashboard"
                     element={
@@ -95,6 +99,22 @@ function AppRoutes() {
                     element={
                         <ProtectedRoute allowedRoles={['admin']}>
                             <SubscriptionsList />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="admin/schools"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <SchoolsList />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="admin/school-expenses"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                            <SchoolExpenses />
                         </ProtectedRoute>
                     }
                 />

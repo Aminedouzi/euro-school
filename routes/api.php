@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\InvoiceController;
+use App\Http\Controllers\Api\SchoolController;
+use App\Http\Controllers\Api\SchoolExpenseController;
 use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,8 +22,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('courses/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
     Route::post('courses/{course}/unenroll', [CourseController::class, 'unenroll'])->name('courses.unenroll');
 
+    Route::get('/schools', [SchoolController::class, 'index']);
+
     // Admin only routes
     Route::middleware('admin')->group(function () {
+        Route::post('/schools', [SchoolController::class, 'store']);
+        Route::put('/schools/{school}', [SchoolController::class, 'update']);
+        Route::patch('/schools/{school}', [SchoolController::class, 'update']);
+        Route::delete('/schools/{school}', [SchoolController::class, 'destroy']);
+        Route::apiResource('school-expenses', SchoolExpenseController::class)->only(['index', 'store', 'update', 'destroy']);
+
         Route::apiResource('users', UserController::class);
         Route::apiResource('payments', PaymentController::class);
         Route::apiResource('invoices', InvoiceController::class);

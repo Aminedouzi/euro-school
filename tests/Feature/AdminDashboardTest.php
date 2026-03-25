@@ -3,10 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class AdminDashboardTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * Test that admin can access dashboard stats
      */
@@ -14,8 +17,9 @@ class AdminDashboardTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($admin)
-            ->getJson('/api/admin/dashboard-stats');
+        Sanctum::actingAs($admin);
+
+        $response = $this->getJson('/api/admin/dashboard-stats');
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -29,8 +33,9 @@ class AdminDashboardTest extends TestCase
                 'revenue_growth',
                 'monthly_revenue_data',
                 'student_distribution',
+                'revenue_by_school',
                 'recent_payments',
-            ]
+            ],
         ]);
     }
 
@@ -41,12 +46,11 @@ class AdminDashboardTest extends TestCase
     {
         $user = User::factory()->create(['role' => 'student']);
 
-        $response = $this->actingAs($user)
-            ->getJson('/api/admin/dashboard-stats');
+        Sanctum::actingAs($user);
 
-        // The endpoint doesn't have explicit role checking yet
-        // This test documents expected behavior
-        $response->assertStatus(200); // Change to 403 if you want role protection
+        $response = $this->getJson('/api/admin/dashboard-stats');
+
+        $response->assertStatus(403);
     }
 
     /**

@@ -68,7 +68,7 @@ export default function RecentPayments({ payments }) {
                                 {new Date(payment.date).toLocaleDateString('fr-FR')}
                             </td>
                             <td className="px-3 sm:px-6 py-4 text-sm font-medium text-slate-900 dark:text-white text-right">
-                                € {payment.amount.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}
+                                dh {payment.amount.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}
                             </td>
                             <td className="px-3 sm:px-6 py-4 text-center">
                                 <span
