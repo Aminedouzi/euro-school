@@ -23,6 +23,7 @@ export default function Layout() {
     const navLinks = [];
     if (user?.role === 'admin') {
         navLinks.push({ to: '/dashboard', label: 'Tableau de bord' });
+        navLinks.push({ to: '/calendar', label: 'Calendrier' });
         navLinks.push({ to: '/admin/dashboard', label: 'Tableau de bord Admin' });
         navLinks.push({ to: '/admin/users', label: 'Utilisateurs' });
         navLinks.push({ to: '/admin/students', label: 'Élèves' });
@@ -35,13 +36,16 @@ export default function Layout() {
         navLinks.push({ to: '/admin/subscriptions', label: 'Abonnements' });
     } else if (user?.role === 'secretary') {
         navLinks.push({ to: '/dashboard', label: 'Tableau de bord' });
+        navLinks.push({ to: '/calendar', label: 'Calendrier' });
         navLinks.push({ to: '/secretary/courses', label: 'Cours & inscriptions' });
         navLinks.push({ to: '/secretary/students', label: 'Élèves' });
     } else if (user?.role === 'teacher') {
         navLinks.push({ to: '/dashboard', label: 'Mes cours' });
+        navLinks.push({ to: '/calendar', label: 'Calendrier' });
         navLinks.push({ to: '/teacher/courses', label: 'Gérer les cours' });
     } else {
         navLinks.push({ to: '/dashboard', label: 'Mes cours' });
+        navLinks.push({ to: '/calendar', label: 'Calendrier' });
         navLinks.push({ to: '/student/catalog', label: 'Catalogue des cours' });
     }
 

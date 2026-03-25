@@ -375,13 +375,13 @@ export default function PaymentsList() {
                                     <td className="px-6 py-4 space-x-2">
                                         <button
                                             onClick={() => handleEdit(payment)}
-                                            className="text-blue-600 hover:text-blue-700 font-medium transition"
+                                            className="px-3 py-1 rounded font-medium transition outline-none text-blue-600 hover:text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-400"
                                         >
                                             ✏️
                                         </button>
                                         <button
                                             onClick={() => handleDelete(payment.id)}
-                                            className="text-red-600 hover:text-red-700 font-medium transition"
+                                            className="px-3 py-1 rounded font-medium transition outline-none text-red-600 hover:text-white hover:bg-red-600 focus:ring-2 focus:ring-red-400"
                                         >
                                             🗑️
                                         </button>

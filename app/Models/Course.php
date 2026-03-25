@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
@@ -34,9 +35,12 @@ class Course extends Model
         return $this->belongsTo(School::class);
     }
 
-    public function teacher(): BelongsTo
+
+    // Old: public function teacher(): BelongsTo { ... }
+    // New: Many-to-many relationship for multiple teachers
+    public function teachers(): BelongsToMany
     {
-        return $this->belongsTo(User::class, 'teacher_id');
+        return $this->belongsToMany(User::class, 'course_teacher', 'course_id', 'teacher_id')->withTimestamps();
     }
 
     public function students(): BelongsToMany
@@ -44,5 +48,13 @@ class Course extends Model
         return $this->belongsToMany(User::class, 'course_user')
             ->withPivot(['enrolled_at', 'status'])
             ->withTimestamps();
+    }
+
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(CourseSchedule::class)
+            ->orderBy('weekday')
+            ->orderBy('sort_order')
+            ->orderBy('start_time');
     }
 }

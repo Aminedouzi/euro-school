@@ -261,8 +261,8 @@ export default function SchoolExpenses() {
                                     </td>
                                     <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{methodLabel(x.method)}</td>
                                     <td className="px-4 py-3 space-x-2 whitespace-nowrap">
-                                        <button type="button" onClick={() => handleEdit(x)} className="text-blue-600 font-medium">Modifier</button>
-                                        <button type="button" onClick={() => handleDelete(x.id)} className="text-red-600 font-medium">Supprimer</button>
+                                        <button type="button" onClick={() => handleEdit(x)} className="px-3 py-1 rounded font-medium transition outline-none text-blue-600 hover:text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-400">Modifier</button>
+                                        <button type="button" onClick={() => handleDelete(x.id)} className="px-3 py-1 rounded font-medium transition outline-none text-red-600 hover:text-white hover:bg-red-600 focus:ring-2 focus:ring-red-400">Supprimer</button>
                                     </td>
                                 </tr>
                             ))}

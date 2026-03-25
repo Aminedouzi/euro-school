@@ -74,11 +74,11 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
-        $user->load(['taughtCourses', 'courses']);
+        $user->load(['teachingCourses', 'courses']);
 
         return response()->json([
             'user' => array_merge($user->only(['id', 'name', 'email', 'role', 'phone']), [
-                'taught_courses' => $user->taughtCourses,
+                'taught_courses' => $user->teachingCourses,
                 'enrolled_courses' => $user->courses,
             ]),
         ]);

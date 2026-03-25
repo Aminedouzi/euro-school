@@ -311,10 +311,16 @@ export default function StudentsList() {
                                             {names || '—'}
                                         </td>
                                         <td className="px-4 py-3 space-x-2 whitespace-nowrap">
-                                            <button onClick={() => handleEdit(student)} className="text-blue-600 hover:text-blue-700 font-medium transition">
+                                            <button
+                                                onClick={() => handleEdit(student)}
+                                                className="px-3 py-1 rounded font-medium transition outline-none text-blue-600 hover:text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-400"
+                                            >
                                                 Modifier
                                             </button>
-                                            <button onClick={() => handleDelete(student.id)} className="text-red-600 hover:text-red-700 font-medium transition">
+                                            <button
+                                                onClick={() => handleDelete(student.id)}
+                                                className="px-3 py-1 rounded font-medium transition outline-none text-red-600 hover:text-white hover:bg-red-600 focus:ring-2 focus:ring-red-400"
+                                            >
                                                 Supprimer
                                             </button>
                                         </td>

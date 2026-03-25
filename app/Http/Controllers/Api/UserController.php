@@ -147,9 +147,9 @@ class UserController extends Controller
                 'course_ids'       => $courseIds,
             ];
         } elseif ($user->role === 'teacher') {
-            $courseIds = $user->relationLoaded('taughtCourses')
-                ? $user->taughtCourses->pluck('id')->values()->all()
-                : $user->taughtCourses()->pluck('id')->toArray();
+            $courseIds = $user->relationLoaded('teachingCourses')
+                ? $user->teachingCourses->pluck('id')->values()->all()
+                : $user->teachingCourses()->pluck('id')->toArray();
 
             $data += [
                 'teacher_uid'  => $user->teacher_uid,
@@ -163,7 +163,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::with(['enrolledCourses', 'taughtCourses'])
+        $users = User::with(['enrolledCourses', 'teachingCourses'])
             ->get()
             ->map(fn ($user) => $this->formatUser($user));
 
@@ -205,12 +205,12 @@ class UserController extends Controller
             return $user;
         });
 
-        return response()->json($this->formatUser($user->load('taughtCourses', 'enrolledCourses')), 201);
+        return response()->json($this->formatUser($user->load('teachingCourses', 'enrolledCourses')), 201);
     }
 
     public function show(User $user)
     {
-        return response()->json($this->formatUser($user->load('taughtCourses', 'enrolledCourses')));
+        return response()->json($this->formatUser($user->load('teachingCourses', 'enrolledCourses')));
     }
 
     public function update(Request $request, User $user)
@@ -265,7 +265,7 @@ class UserController extends Controller
             return $user->fresh();
         });
 
-        return response()->json($this->formatUser($user->load('taughtCourses', 'enrolledCourses')));
+        return response()->json($this->formatUser($user->load('teachingCourses', 'enrolledCourses')));
     }
 
     public function destroy(User $user)

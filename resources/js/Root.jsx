@@ -20,6 +20,7 @@ import SecretaryCourses from './pages/secretary/SecretaryCourses';
 import SecretaryStudentsList from './pages/secretary/StudentsList';
 import TeacherCourses from './pages/teacher/TeacherCourses';
 import CourseCatalog from './pages/student/CourseCatalog';
+import CourseCalendar from './pages/CourseCalendar';
 
 function AppRoutes() {
     return (
@@ -36,6 +37,7 @@ function AppRoutes() {
             >
                 <Route index element={<Navigate to="/dashboard" replace />} />
                 <Route path="dashboard" element={<Dashboard />} />
+                <Route path="calendar" element={<CourseCalendar />} />
                 <Route
                     path="admin/dashboard"
                     element={
